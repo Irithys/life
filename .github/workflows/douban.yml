@@ -15,5 +15,5 @@ jobs:
         id: 181637001
         type: movie
         format: notion
-        dir: 76ed830e50f24ae8a63ce36c1515cd08
+        dir: 6264af1eb5954a08b0958b737cfd330e
         notion_token: ${{ secrets.notion_token }}
