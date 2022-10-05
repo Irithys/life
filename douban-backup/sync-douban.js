@@ -137,15 +137,7 @@ async function handleFeed(feed, category) {
 
   if (filtered.results.length) {
     feed = feed.filter(item => {
-      let findItem = filtered.results.filter(async i => {
-        // need to fetch property item as the database filter results do not include
-        // property contents any more, see https://developers.notion.com/reference/retrieve-a-page-property
-        let propItem = await notion.pages.properties.retrieve({
-          page_id: i.id,
-          property_id: i.properties[DB_PROPERTIES.ITEM_LINK].id,
-        });
-        return propItem.url === item.link;
-      });
+      let findItem = filtered.results.filter(i => i.properties[DB_PROPERTIES.ITEM_LINK].url === item.link);
       return !findItem.length; // if length != 0 means can find item in the filtered results, means this item already in db
     });
   }
@@ -291,6 +283,7 @@ async function fetchItem(link, category) {
       } else if (text.startsWith('原作名')) {
         itemData[DB_PROPERTIES.TITLE] += nextText;
       } else if (text.startsWith('出版年')) {
+        nextText = nextText.replace(/年|月|日/g, '-').slice(0, -1); // '2000年5月' special case
         itemData[DB_PROPERTIES.PUBLICATION_DATE] = dayjs(nextText).format('YYYY-MM-DD'); // this can have only year, month, but need to format to YYYY-MM-DD
       } else if (text.startsWith('ISBN')) {
         itemData[DB_PROPERTIES.ISBN] = Number(nextText);
